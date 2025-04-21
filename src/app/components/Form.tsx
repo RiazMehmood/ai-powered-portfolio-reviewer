@@ -6,13 +6,19 @@ export default function PortfolioForm() {
   const [url, setUrl] = useState("");
   const [review, setReview] = useState("");
   const [loading, setLoading] = useState(false);
+  const [provider, setProvider] = useState<"openai" | "gemini">("openai");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
+    const endpoint =
+      provider === "openai"
+        ? "http://localhost:8000/review"
+        : "http://localhost:8000/review/gemini";
+
     try {
-      const res = await fetch("http://localhost:8000/review", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,12 +49,38 @@ export default function PortfolioForm() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setProvider("openai")}
+            className={`px-4 py-2 rounded ${
+              provider === "openai"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            Use OpenAI
+          </button>
+          <button
+            type="button"
+            onClick={() => setProvider("gemini")}
+            className={`px-4 py-2 rounded ${
+              provider === "gemini"
+                ? "bg-purple-600 text-white"
+                : "bg-gray-200 text-black"
+            }`}
+          >
+            Use Gemini
+          </button>
+        </div>
+
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-green-600 text-white px-4 py-2 rounded"
           disabled={loading}
         >
-          {loading ? "Reviewing..." : "Submit"}
+          {loading ? "Reviewing..." : `Submit to ${provider.toUpperCase()}`}
         </button>
       </form>
 

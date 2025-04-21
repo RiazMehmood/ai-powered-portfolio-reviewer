@@ -1,3 +1,5 @@
+from services.gemini_review import generate_review_gemini
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from services.openai_review import generate_review
@@ -21,6 +23,16 @@ class ReviewRequest(BaseModel):
 async def review_endpoint(request: ReviewRequest):
     try:
         review = await generate_review(request.url)
+        return {"review": review}
+    except Exception as e:
+        return {"error": str(e)}
+
+# Endpoint for Gemini review
+
+@app.post("/review/gemini")
+async def gemini_review_endpoint(request: ReviewRequest):
+    try:
+        review = await generate_review_gemini(request.url)
         return {"review": review}
     except Exception as e:
         return {"error": str(e)}
